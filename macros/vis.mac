@@ -1,0 +1,38 @@
+#
+# when runing in interactive mode
+#
+# Sets some default verbose
+#
+/control/verbose 0
+/run/verbose 1
+/vis/verbose 0
+#only store trajectories if visualisation is used, otherwise will slow down sims
+/tracking/storeTrajectory 1
+#
+# Create a scene handler for a specific graphics system
+# (Edit the next line(s) to choose another graphics system)
+#
+#/vis/open OGLSX 600x600-0+50
+#/vis/open OGLIX 600x600-5000-500
+## dimensions and position of window
+#/vis/open RayTracer
+#/vis/viewer/set/all viewer-0
+#/vis/open VRML2FILE
+/vis/open OGLSQt
+
+#/vis/open HepRepFile
+
+/g4imbl/pg/setElectronBeam
+/g4imbl/dc/setWigglerField 3.0	# MUST BE DONE PRIOR TO CONSTRUCTING FRONT END (at this stage)
+/g4imbl/dc/constructFrontEnd
+/g4imbl/dc/constructHutch1A
+/g4imbl/dc/constructHutch1B hybrid
+/g4imbl/dc/constructHutch2A
+/g4imbl/dc/constructHutch2B
+/g4imbl/dc/setBDASize 2.014
+/g4imbl/dc/ConstructMultiSlitColimator
+/g4imbl/setSourceToPSFDistance 33640 	#10 mm after 2B MSC 
+/g4imbl/dc/ConstructDynMrtStage
+/control/execute macros/visrefresh.mac
+
+
