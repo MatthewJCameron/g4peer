@@ -26,8 +26,18 @@ DetectorConstruction::DetectorConstruction(){
   worldPhys = NULL;
   worldX=0*cm;
   detectorMessenger = new DetectorMessenger(this);
+}
+
+G4VPhysicalVolume* DetectorConstruction::Construct(){
   //define materials
+  G4int ncomponents = 1;
   G4NistManager* nist_manager = G4NistManager::Instance();
+    G4Element* Ar = nist_manager->FindOrBuildElement(18);
+  G4Element* N = nist_manager->FindOrBuildElement(7);
+  G4Element* O = nist_manager->FindOrBuildElement(8);
+  G4Element* C = nist_manager->FindOrBuildElement(6);
+  G4Material* Copper = nist_manager->FindOrBuildMaterial("G4_Cu");
+  G4Material* Lead = nist_manager->FindOrBuildMaterial("G4_Pb");
   G4Material* air = nist_manager->FindOrBuildMaterial("G4_AIR");
   //G4Material* Stainless = nist_manager->FindOrBuildMaterial("G4_STAINLESS-STEEL");
   G4Material* Pb = nist_manager->FindOrBuildMaterial("G4_Pb");
@@ -56,16 +66,19 @@ DetectorConstruction::DetectorConstruction(){
   G4double worldZ=100*cm;
   G4Box* worldBox = new G4Box("worldBox",worldX/2.,worldY/2.,worldZ/2.);
   G4LogicalVolume* worldLog = new G4LogicalVolume(worldBox, air,"worldLog",0,0,0);
-  G4PhysicalVolume* worldPhys = new G4PVPlacement(0, G4ThreeVector(), worldLog,"worldPhys",0,false,0);
+  worldPhys = new G4PVPlacement(0, G4ThreeVector(), worldLog,"worldPhys",0,false,0);
   worldLog->SetVisAttributes(G4VisAttributes::Invisible);
   //making lead box
   G4double leadX = 10*cm;
+  G4double leadY = 10*cm;
+  G4double leadZ = 10*cm;
   G4Box* leadBox = new G4Box("leadBox",leadX/2.,leadY/2.,leadZ/2.);
-  G4LogicalVolume* leadLog = new G4LogicalVolume(leadBox, Pbb,"leadLog",0,0,0);
+  G4LogicalVolume* leadLog = new G4LogicalVolume(leadBox, Pb,"leadLog",0,0,0);
   G4double posX=10*cm;
   G4double posY=10*cm;
   G4double posZ=10*cm;
-  new G4PVPlacement(0, G4ThreeVector(posX,posY,posZ),"leadPhys", leadLog,worldPhys,"worldPhys",false,0,true);
+  new G4PVPlacement(0, G4ThreeVector(posX,posY,posZ),"leadPhys", leadLog,worldPhys,false,0,true);
+  return worldPhys;
 }
 
 DetectorConstruction::~DetectorConstruction(){

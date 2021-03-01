@@ -1,7 +1,5 @@
 #include "RunAction.hh"
 #include "DetectorConstruction.hh"
-#include "dynMRTstage.hh"
-#include  "dynMRTParameterisation.hh"
 
 #include "G4Run.hh"
 #include "G4RunManager.hh"
@@ -19,8 +17,6 @@ RunAction::~RunAction(){
 
 void RunAction::BeginOfRunAction(const G4Run* aRun){
   timerRun.Start();
-  DetectorConstruction* dc = (DetectorConstruction*)G4RunManager::GetRunManager()->GetUserDetectorConstruction();
-  dynMRTstage* ds = dc->GetDynMRTStage();
   phaseSpaceOutputFilename = "psf_" + jobID + ".dat";
   if (phaseSpaceScoringActive){
     phaseSpaceOutputFile.open(phaseSpaceOutputFilename.c_str(),ios::out | ios::binary);
