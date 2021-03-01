@@ -15,8 +15,8 @@ PrimaryGeneratorAction::PrimaryGeneratorAction(){
   G4double de = 0.02*energy;//percent spread in beam energy
   G4double spotsizeY = 30*mm;
   G4double spotsizeZ = 30*mm;
-  G4ThreeVector position = (0,0,0);
-  G4ThreeVector momentumDirection = (0,0,0);
+  G4ThreeVector position(0,0,0);
+  G4ThreeVector momentumDirection(0,0,0);
   G4RunManager* theRunManager =  G4RunManager::GetRunManager();
   DetectorConstruction* myDC = (DetectorConstruction*)theRunManager->GetUserDetectorConstruction();
   G4double worldX = myDC->GetWorldX();
