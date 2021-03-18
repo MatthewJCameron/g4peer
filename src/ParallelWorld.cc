@@ -31,12 +31,12 @@ void ParallelWorld::Construct()
   G4VPhysicalVolume* worldPhysical = GetWorld();
   G4LogicalVolume* worldLogical = worldPhysical->GetLogicalVolume();
   worldLogical->SetVisAttributes(G4VisAttributes::Invisible);
-  G4Box * psfScorerSolid = new G4Box("psfScorerSolid", 1.*mm, 30.*mm, 2*mm);
+  G4Box * psfScorerSolid = new G4Box("psfScorerSolid", 1.*mm, 50.*cm, 50*cm);
   G4LogicalVolume * psfScorerLogical   = new G4LogicalVolume(psfScorerSolid, 0, "psfScorerLogical", 0, 0, 0);
   psfScorerLogical->SetVisAttributes(G4Color::Red());
   G4Box* worldBox = (G4Box*)worldLogical->GetSolid();
   G4double worldhalfX = worldBox->GetXHalfLength();
-   G4double posX = worldhalfX - 10*mm; //
+  G4double posX = -worldhalfX + 2187*mm; //
   //Place phase space scorer at end of world volume by default
   //this will need to be modified using
   //UI commands.

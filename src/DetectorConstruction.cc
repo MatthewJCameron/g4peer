@@ -29,6 +29,12 @@ DetectorConstruction::DetectorConstruction(){
 }
 
 G4VPhysicalVolume* DetectorConstruction::Construct(){
+  G4double EndOfLinacToDipoleDist=1987*mm;
+  G4double DipoleToLeadDist=300*mm;
+  G4double ChamberInnerDiameter= 40*mm;
+  G4double StainlessSteelThickness=2*mm;
+  G4double incidenceOnSteel=7.5;//*degrees;
+  G4double incidenceOnLead=15;//*degrees;
   //define materials
   G4int ncomponents = 1;
   G4NistManager* nist_manager = G4NistManager::Instance();
@@ -39,7 +45,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct(){
   G4Material* Copper = nist_manager->FindOrBuildMaterial("G4_Cu");
   G4Material* Lead = nist_manager->FindOrBuildMaterial("G4_Pb");
   G4Material* air = nist_manager->FindOrBuildMaterial("G4_AIR");
-  //G4Material* Stainless = nist_manager->FindOrBuildMaterial("G4_STAINLESS-STEEL");
+  G4Material* Stainless = nist_manager->FindOrBuildMaterial("G4_STAINLESS-STEEL");
   G4Material* Pb = nist_manager->FindOrBuildMaterial("G4_Pb");
   // Laboratory vacuum: Dry air (average composition)
   G4double density = 1.7836*mg/cm3 ;       // STP
@@ -61,23 +67,37 @@ G4VPhysicalVolume* DetectorConstruction::Construct(){
   LaboratoryVacuum->AddMaterial( OxygenGas,   fractionmass = 0.2315 ) ;
   LaboratoryVacuum->AddMaterial( ArgonGas,    fractionmass = 0.0128 ) ;
   //constructing the geometry
-  worldX=5*m;//
+  worldX=3*m;//
   G4double worldY=100*cm;
   G4double worldZ=100*cm;
   G4Box* worldBox = new G4Box("worldBox",worldX/2.,worldY/2.,worldZ/2.);
   G4LogicalVolume* worldLog = new G4LogicalVolume(worldBox, air,"worldLog",0,0,0);
   worldPhys = new G4PVPlacement(0, G4ThreeVector(), worldLog,"worldPhys",0,false,0);
   worldLog->SetVisAttributes(G4VisAttributes::Invisible);
+  //making vacuum chamber steel
+  G4double steelBeamIncidenceAngle=7.5*deg;
+  G4Box* steel1Box = new G4Box("steelBox",EndOfLinacToDipoleDist/2.,(StainlessSteelThickness+ChamberInnerDiameter)/2.,(StainlessSteelThickness+ChamberInnerDiameter)/2.);
+  G4LogicalVolume* steel1Log = new G4LogicalVolume(steel1Box, Stainless,"steel1Log",0,0,0);
+  G4double posX = -worldX/2. + EndOfLinacToDipoleDist/2.;
+  G4double posY=0*cm;
+  G4double posZ=0*cm;
+  G4VPhysicalVolume* steel1Phys = new G4PVPlacement(0, G4ThreeVector(posX,posY,posZ),"steel1Phys", steel1Log,worldPhys,false,0,true);
+  //making vacuum chamber vacuum
+  G4Box* vac1Box = new G4Box("steelBox",EndOfLinacToDipoleDist/2.-StainlessSteelThickness/2.,(ChamberInnerDiameter)/2.,(ChamberInnerDiameter)/2.);
+  G4LogicalVolume* vac1Log = new G4LogicalVolume(vac1Box, Stainless,"steel1Log",0,0,0);
+  new G4PVPlacement(0, G4ThreeVector(-StainlessSteelThickness/2.,0,0),"vac1Phys", vac1Log,steel1Phys,false,0,true);
   //making lead box
-  G4double leadX = 10*cm;
-  G4double leadY = 10*cm;
-  G4double leadZ = 10*cm;
+  G4double leadX = 205*mm;
+  G4double leadY = 205*mm;
+  G4double leadZ = 306*mm;
+  G4double leadBeamIncidence = (75)*deg;
+  G4RotationMatrix* zRot = new G4RotationMatrix;
+  zRot->rotateZ(leadBeamIncidence);
   G4Box* leadBox = new G4Box("leadBox",leadX/2.,leadY/2.,leadZ/2.);
   G4LogicalVolume* leadLog = new G4LogicalVolume(leadBox, Pb,"leadLog",0,0,0);
-  G4double posX=10*cm;
-  G4double posY=10*cm;
-  G4double posZ=10*cm;
-  new G4PVPlacement(0, G4ThreeVector(posX,posY,posZ),"leadPhys", leadLog,worldPhys,false,0,true);
+  posX+=EndOfLinacToDipoleDist/2.+ DipoleToLeadDist +leadX/2.;
+  posY+=leadX/2;
+  new G4PVPlacement(G4Transform3D(*zRot, G4ThreeVector(posX,posY,posZ)),"leadPhys", leadLog,worldPhys,false,0,true);
   return worldPhys;
 }
 
